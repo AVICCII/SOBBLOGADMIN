@@ -5,11 +5,8 @@ Vue.use(VueRouter)
 
 
 
-/* 导入的内容 */
-const home = () => import("@/components/home")
-const article = () => import("@/components/article")
 /* 登陆页面 */
-const login = () => import("@/page/login/login")
+// const login = () => import("@/page/login/login")
 /* 内容部分 */
 const ArticleManage = () => import("@/page/content/manage-article")
 const postArticle = () => import("@/page/content/post-article")
@@ -28,11 +25,95 @@ const email = () => import("@/page/user/email")
 const info = () => import("@/page/user/info")
 const list = () => import("@/page/user/list")
 const resetPassword = () => import("@/page/user/reset-password")
+/* 布局 */
+const baseView = () => import("@/layout/base-view")
+const rightView = () => import("@/layout/right-content")
+
 
 //路由器
 const routes = [
-    {path:'/home',component:home},
-    {path:'/article',component:article}
+    {path: '',
+        component:baseView,
+        redirect:'/index',
+        children:[
+            {
+                path:"/index",
+                component:index
+            },
+            {
+                path: '/content',
+                component:rightView,
+                children:[
+                    {
+                        path:'post-article',
+                        component:postArticle
+                    },
+                    {
+                        path:'manage-article',
+                        component:ArticleManage
+                    },
+                    {
+                        path:'manage-image',
+                        component:imageManage
+                    },
+                    {
+                        path:'manage-comment',
+                        component:commentManage
+                    }
+                ]
+            },
+            {
+                path: '/user',
+                component:rightView,
+                children:[
+                    {
+                        path:'list',
+                        component:list
+                    },
+                    {
+                        path:'reset-password',
+                        component:resetPassword
+                    },
+                    {
+                        path:'email',
+                        component:email
+                    },
+                    {
+                        path:'info',
+                        component:info
+                    }
+                ]
+            },
+            {
+                path: '/operation',
+                component:rightView,
+                children:[
+                    {
+                        path:'category',
+                        component:categoryManage
+                    },
+                    {
+                        path:'loop',
+                        component:loopManage
+                    }
+                ]
+            },
+            {
+                path: '/settings',
+                component:rightView,
+                children:[
+                    {
+                        path:'friend-link',
+                        component:friendLink
+                    },
+                    {
+                        path:'websize-info',
+                        component:webSizeInfo
+                    }
+                ]
+            }
+        ]
+    },
 ]
 
 const router = new VueRouter({
