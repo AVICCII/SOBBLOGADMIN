@@ -1,7 +1,9 @@
 <template>
     <!--显示我们的内容--><div>
     <el-container>
-        <el-header id="admin-header-box">顶部内容</el-header>
+        <el-header id="admin-header-box">
+            <top-header/>
+        </el-header>
         <el-container>
             <el-aside id="left-menu-list-box" width="200px">
     <left-menu/>
@@ -37,21 +39,22 @@
 </script>
 
 <style >
+    #left-menu-list-box .el-menu{
+        border-right:none;
+    }
+
     .el-header, .el-footer {
         background-color: dodgerblue;
-        color: #333;
-        text-align: center;
         line-height: 60px;
         height: 60px !important;
     }
     .el-aside {
-        text-align: center;
+        border-right:  solid 1px #e6e6e6;
         line-height: 200px;
     }
 
-    .el-main {
-        background-color: #E9EEF3;
-        color: #333;
-        text-align: center;
+    .el-main{
+        padding: 0px;
     }
+
 </style>

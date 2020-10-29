@@ -5,10 +5,13 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
 import leftMenu from './layout/left-menu'
+import topHeader from './layout/top-header'
+
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.component('leftMenu',leftMenu)
+Vue.component('topHeader',topHeader)
 
 new Vue({
   router,
