@@ -23,11 +23,11 @@
                                 <el-input type="password" v-model="User.password" placehoder="请输入密码"></el-input>
                             </el-form-item>
                             <el-form-item label="人类验证码" required>
-                                <el-input v-model="loginInfo.verifyCode" placehoder="请输入右侧验证码"></el-input>
+                                <el-input v-model="loginInfo.verifyCode" placehoder="请输入右侧验证码" @keyup.enter.native="doLogin"></el-input>
                                 <img :src="captchaPath" @click="updateVerifyCode" class="captcha_code">
                             </el-form-item>
                             <el-form-item class="login-buttion">
-                                <el-button type="primary" @click="doLogin" size="small"> 登 录</el-button>
+                                <el-button type="primary" @click="doLogin" size="small" > 登 录</el-button>
                             </el-form-item>
                         </el-form>
                     </el-col>
@@ -56,38 +56,72 @@
                     captcha_key: '',
                     from: ''
                 },
-                captchaPath:'',
+                captchaPath: '',
             }
         },
         methods: {
+            toastE(msg) {
+                this.$message({
+                    message: msg,
+                    center: true,
+                    type: 'error'
+                })
+            },
+
             doLogin() {
-            //发起登录
-            //TODO：检查数据
-            //向服务器提交数据
-            //处理结果
-                console.log(this.loginInfo);
-                console.log(this.User);
-            //TODO：
+                //发起登录
+                //TODO：检查数据
+                if (this.User.userName === '') {
+                    this.toastE('账号不可为空')
+                    return
+                }
+
+                if (this.User.password === '') {
+                    this.toastE('密码不可为空')
+                    return
+                }
+
+                if (this.loginInfo.verifyCode === '') {
+                    this.toastE('验证码不可为空')
+                    return
+                }
                 axios({
                     method: 'post',
-                    url: '/user/login/'+this.loginInfo.verifyCode+'/'+this.loginInfo.captcha_key,
+                    url: '/user/login/' + this.loginInfo.verifyCode + '/' + this.loginInfo.captcha_key,
                     data: this.User
-                }).then(result =>{
+                }).then(result => {
                     console.log(result.data);
+                    // 向服务器提交数据
+                    // 处理登录结果
+                    // 判断状态
+                    let data = result.data
+
+                    if (data.code === 10000) {
+                        this.$message({
+                            message: data.message,
+                            center: true,
+                            type: 'success'
+                        })
+                        //如果是成功
+                        //成功则跳转---->判断角色，如果是普通用户，跳转到门户首页，如果是管理员，跳转到管理中心
+                        //其他，就给出提示
+                        //TODO:需要判断角色
+                        this.$router.push({path: '/index'})
+                    } else {
+                        //更新人类验证码
+                        this.updateVerifyCode()
+                        this.toastE(data.message)
+                    }
                 });
             },
-            updateVerifyCode(){
-                this.captchaPath = 'http://127.0.0.1:2020/user/captcha?captcha_key='+ this.loginInfo.captcha_key +"&random" + Date.parse(new Date());
-                console.log(this.captchaPath);
+            updateVerifyCode() {
+                this.captchaPath = 'http://localhost:2020/user/captcha?captcha_key=' + this.loginInfo.captcha_key + "&random" + Date.parse(new Date());
             }
 
         },
         mounted() {
-            axios
-                .get('https://api.sunofbeach.net/shop/discovery/categories')
-                .then(response => {
-                    console.log(response.data);
-                });
+            //TODO:检查登录是否有效
+            //如果已经登录了，跳转到对应的页面
             this.loginInfo.captcha_key = Date.parse(new Date());
             this.updateVerifyCode();
         }
@@ -96,8 +130,8 @@
 
 <style>
 
-    .captcha_code{
-        cursor:pointer;
+    .captcha_code {
+        cursor: pointer;
         vertical-align: middle;
         margin-left: 10px;
         border: #E6E6E6 solid 1px;
@@ -133,10 +167,11 @@
         font-weight: 600;
     }
 
-    .login-center-box .el-input{
+    .login-center-box .el-input {
         width: 200px;
 
     }
+
     .login-center-box {
         border-radius: 4px;
         padding: 20px;
