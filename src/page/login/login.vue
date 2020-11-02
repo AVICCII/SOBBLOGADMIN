@@ -42,9 +42,9 @@
 
 <script>
 
-    const axios = require('axios')
+import {doLogin} from "../../api/api";
 
-    export default {
+export default {
         data() {
             return {
                 User: {
@@ -85,20 +85,14 @@
                     this.toastE('验证码不可为空')
                     return
                 }
-                axios({
-                    method: 'post',
-                    url: '/user/login/' + this.loginInfo.verifyCode + '/' + this.loginInfo.captcha_key,
-                    data: this.User
-                }).then(result => {
-                    console.log(result.data);
+                doLogin(this.loginInfo.verifyCode,this.loginInfo.captcha_key,this.User).then(result => {
+                    console.log(result)
                     // 向服务器提交数据
                     // 处理登录结果
                     // 判断状态
-                    let data = result.data
-
-                    if (data.code === 10000) {
+                    if (result.code === 10000) {
                         this.$message({
-                            message: data.message,
+                            message: result.message,
                             center: true,
                             type: 'success'
                         })
@@ -110,7 +104,7 @@
                     } else {
                         //更新人类验证码
                         this.updateVerifyCode()
-                        this.toastE(data.message)
+                        this.toastE(result.message)
                     }
                 });
             },

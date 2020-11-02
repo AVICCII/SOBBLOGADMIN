@@ -41,6 +41,7 @@
 <style >
     #left-menu-list-box .el-menu{
         border-right:none;
+        background-color: #F2F2F2;
     }
 
     .el-header, .el-footer {
@@ -49,6 +50,7 @@
         height: 60px !important;
     }
     .el-aside {
+        background-color: #F2F2F2;
         border-right:  solid 1px #e6e6e6;
         line-height: 200px;
     }

@@ -2,20 +2,20 @@
     <div>
         <el-menu
                 default-active="0"
-                unique-opened="true"
+                :uniqueOpened="true"
                 class="el-menu-vertical">
 
             <!-- 遍历菜单内容 -->
             <!-- 有两种:有一种没子菜单，有一种有 -->
             <template v-for="(item,index) in menuList">
                 <router-link :to="item.path" v-if="!item.children&&!item.hidden" :key="index">
-                    <el-menu-item :index="index">
+                    <el-menu-item :index="index+''">
                         <i :class="item.icon"></i>
                         <span slot="title">{{item.name}}</span>
                     </el-menu-item>
                 </router-link>
 
-                <el-submenu v-if="item.children&&!item.hidden" :key="index" :index="index" >
+                <el-submenu v-if="item.children&&!item.hidden" :key="index" :index="index+''" >
                     <template slot="title">
                         <i :class="item.icon"></i>
                         <span>{{item.name}}</span>
@@ -43,7 +43,6 @@
         mounted() {
             let menuList = routes[0]
             this.menuList = menuList.children
-            console.log(menuList)
         }
     }
 </script>

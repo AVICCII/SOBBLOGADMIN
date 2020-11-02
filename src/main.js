@@ -12,20 +12,19 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.component('leftMenu',leftMenu)
 Vue.component('topHeader',topHeader)
-const axios = require('axios')
+import {checkToken} from "./api/api";
+
 router.beforeEach((to,from,next) =>{
   //如果是登录界面，需要放行
   if (to.path === '/login') {
     next()
   }else{
     //否则检测用户角色
-    axios.get('/user/check-token').then(result => {
-      let res = result.data
-      console.log(res)
+    checkToken().then(result => {
 
-      if (res.code === 10000){
+      if (result.code === 10000){
         //如果是管理员，放行
-        if (res.data.role === 'role_admin'){
+        if (result.data.role === 'role_admin'){
           next()
         }else{
           //如果是普通用户，跳转到门户首页
