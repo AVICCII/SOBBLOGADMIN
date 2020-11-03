@@ -42,7 +42,7 @@
 
 <script>
 
-import {doLogin} from "../../api/api";
+import {doLogin,success_code} from "../../api/api";
 
 export default {
         data() {
@@ -90,7 +90,7 @@ export default {
                     // 向服务器提交数据
                     // 处理登录结果
                     // 判断状态
-                    if (result.code === 10000) {
+                    if (result.code === success_code) {
                         this.$message({
                             message: result.message,
                             center: true,
