@@ -37,3 +37,8 @@ export const updateCategory = (categoryId,category) => {
 export const listLoop = () => {
     return http.requestGet('/admin/loop/list')
 };
+
+//添加分类列表
+export const postLoop = (Looper) => {
+    return http.requestPost('/admin/loop',Looper)
+};

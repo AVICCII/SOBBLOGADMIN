@@ -75,7 +75,47 @@
         </div>
         <!---->
         <div class="loop-dialog-box">
-
+            <el-dialog
+                    :close-on-click-modal="false"
+                    :close-on-press-escape="false"
+                    :title="loopEditorTitle"
+                    :visible.sync="loopDialogShow"
+                    width="600px">
+                <div>
+                    <el-form  label-width="100px" size="medium" >
+                        <el-form-item label="轮播图标题">
+                            <el-input v-model="Looper.title"></el-input>
+                        </el-form-item>
+                        <el-form-item label="跳转链接">
+                            <el-input v-model="Looper.targetUrl"></el-input>
+                        </el-form-item>
+                        <el-form-item label="顺序">
+                            <el-input v-model="Looper.order" :min="1" :max="100"></el-input>
+                        </el-form-item>
+                        <el-form-item label="状态">
+                            <el-select v-model="Looper.state" >
+                                <el-option label="不可用" value="0"></el-option>
+                                <el-option label="正常" value="1"></el-option>
+                            </el-select>
+                        </el-form-item>
+                            <el-form-item label="封面">
+                            <el-upload
+                                    class="avatar-uploader"
+                                    action="/admin/image"
+                                    :show-file-list="false"
+                                    :on-success="uploadSuccess"
+                                    :before-upload="beforeUpload">
+                                <img  v-if="Looper.imageUrl!== ''" :src="Looper.imageUrl" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false" type="danger" size="medium">取 消</el-button>
+                    <el-button  @click="handleLoopEditorCommit" type="primary" size="medium">{{loopEditorDialogCommitText}}</el-button>
+                  </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -89,11 +129,82 @@
 
         data() {
             return {
+                loopEditorDialogCommitText: '添加',
+                loopDialogShow: false,
+                loopEditorTitle: '添加轮播图',
                 loading: false,
-                loops: []
+                loops: [],
+                Looper:{
+                    id:'',
+                    order:1,
+                    state:'1',
+                    title:'',
+                    targetUrl:'',
+                    imageUrl:''
+                }
             }
         },
+        mounted() {
+            this.listLoop()
+        },
         methods: {
+            resetLoop(){
+                this.Looper.id = '';
+                this.Looper.order = 1;
+                this.Looper.state = '1';
+                this.Looper.title = '';
+                this.Looper.targetUrl = '';
+                this.Looper.imageUrl = '';
+            },
+            handleLoopEditorCommit(){
+                //添加记录
+                //检查数据
+                if (this.Looper.title === ''){
+                    this.$message.error('标题不可以为空')
+                    return
+                }
+                if (this.Looper.targetUrl === ''){
+                    this.$message.error('跳转链接不可以为空')
+                    return
+                }
+                if (!this.Looper.targetUrl.startsWith('http://')&&!this.Looper.targetUrl.startsWith('https://')){
+                    this.$message.error('目标链接错误')
+                    return
+                }
+
+                if (this.Looper.imageUrl === ''){
+                    this.$message.error('轮播图不可以为空')
+                    return
+                }
+                console.log(this.Looper)
+                //提交数据
+                api.postLoop(this.Looper).then(result=>{
+                    this.loopDialogShow =false
+                    if(result.code === api.success_code){
+                        this.$message.success(result.message)
+                        //更新列表
+                        this.resetLoop()
+                        this.listLoop()
+                    }else{
+                        console.log("ssss")
+                        this.$message.error(result.message)
+                    }
+                })
+            },
+            beforeUpload(){
+
+            },
+            //上传成功
+            uploadSuccess(response){
+                console.log(response)
+                if (response.code === api.success_code){
+                    //回显图片
+                    this.Looper.imageUrl = 'http://localhost:2020/portal/image/'+response.data.path
+                    this.$message.success(response.message);
+                }else {
+                    this.$message.error(response.message);
+                }
+            },
             edit(item) {
                 console.log(item)
             },
@@ -105,7 +216,7 @@
                 return dateUtils.formatDate(date, 'yyyy-MM-dd:hh:mm:ss')
             },
             showAddLoop() {
-
+                this.loopDialogShow = true
             },
             listLoop() {
                 this.loading = true
@@ -116,15 +227,12 @@
                     }
                 })
             }
-        },
-        mounted() {
-            this.listLoop()
         }
     }
 </script>
 
 <style>
-    .loop-image{
+    .loop-image {
         width: 180px;
         height: 80px;
         padding: 4px;
@@ -135,4 +243,22 @@
     .loop-title {
         text-decoration: none;
     }
+
+    .loop-dialog-box .avatar-uploader .avatar-uploader-icon{
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        border: #8c939d dashed 1px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .loop-dialog-box .el-upload img{
+        width: 178px;
+        border-radius: 4px;
+        height: 178px;
+    }
+
 </style>
