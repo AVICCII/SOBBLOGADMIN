@@ -38,7 +38,23 @@ export const listLoop = () => {
     return http.requestGet('/admin/loop/list')
 };
 
-//添加分类列表
+//添加轮播图列表
 export const postLoop = (Looper) => {
     return http.requestPost('/admin/loop',Looper)
+};
+
+//删除轮播图
+export const deleteLoop = (LooperId) => {
+    return http.requestDelete('/admin/loop/'+LooperId)
+};
+updateLooper
+
+//更新分类列表
+export const updateLooper = (LooperId,Looper) => {
+    return http.requestPut('/admin/loop/'+LooperId,Looper)
+};
+
+//更新分类列表
+export const listUsers = (page,size) => {
+    return http.requestGet('/user/list?page='+page+'&size='+size)
 };

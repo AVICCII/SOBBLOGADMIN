@@ -60,7 +60,6 @@
                     </template>
                 </el-table-column>
 
-
                 <el-table-column
                         fixed="right"
                         label="操作"
@@ -75,6 +74,18 @@
         </div>
         <!---->
         <div class="loop-dialog-box">
+            <el-dialog
+                    :close-on-press-escape = "false"
+                    :close-on-click-modal="false"
+                    title="删除提示"
+                    :visible.sync="deleteDialogShow"
+                    width="400px">
+                <span>你确定要删除{{deleteMessage}}这个轮播图吗</span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="mini" type="danger" @click="deleteDialogShow = false">取 消</el-button>
+                    <el-button size="mini" type="primary" @click="doDeleteItem">确 定</el-button>
+                </span>
+            </el-dialog>
             <el-dialog
                     :close-on-click-modal="false"
                     :close-on-press-escape="false"
@@ -112,7 +123,7 @@
                     </el-form>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false" type="danger" size="medium">取 消</el-button>
+                    <el-button @click="onEditorClose" type="danger" size="medium">取 消</el-button>
                     <el-button  @click="handleLoopEditorCommit" type="primary" size="medium">{{loopEditorDialogCommitText}}</el-button>
                   </span>
             </el-dialog>
@@ -129,6 +140,7 @@
 
         data() {
             return {
+                deleteDialogShow: false,
                 loopEditorDialogCommitText: '添加',
                 loopDialogShow: false,
                 loopEditorTitle: '添加轮播图',
@@ -141,13 +153,28 @@
                     title:'',
                     targetUrl:'',
                     imageUrl:''
-                }
+                },
+                deleteLooperId:'',
+                deleteMessage:''
             }
         },
         mounted() {
             this.listLoop()
         },
         methods: {
+            onEditorClose(){
+                this.editorDialogShow = false
+                this.resetCategory()
+            },
+            doDeleteItem(){
+                api.deleteLoop(this.deleteLooperId).then(result =>{
+                    if(result.code === api.success_code){
+                        this.deleteDialogShow = false
+                        this.$message.success(result.message)
+                        this.listLoop()
+                    }
+                })
+            },
             resetLoop(){
                 this.Looper.id = '';
                 this.Looper.order = 1;
@@ -176,20 +203,36 @@
                     this.$message.error('轮播图不可以为空')
                     return
                 }
-                console.log(this.Looper)
-                //提交数据
-                api.postLoop(this.Looper).then(result=>{
-                    this.loopDialogShow =false
-                    if(result.code === api.success_code){
-                        this.$message.success(result.message)
-                        //更新列表
-                        this.resetLoop()
-                        this.listLoop()
-                    }else{
-                        console.log("ssss")
-                        this.$message.error(result.message)
-                    }
-                })
+                //判断是更新还是添加
+                //如果有id就更新
+                //否则就是添加
+                if(this.Looper.id === ''){
+                    //提交数据
+                    api.postLoop(this.Looper).then(result=>{
+                        this.loopDialogShow =false
+                        if(result.code === api.success_code){
+                            this.$message.success(result.message)
+                            //更新列表
+                            this.resetLoop()
+                            this.listLoop()
+                        }else{
+                            this.$message.error(result.message)
+                        }
+                    })
+                }else {
+                    //更新
+                    api.updateLooper(this.Looper.id,this.Looper).then(result =>{
+                        if (result.code === api.success_code){
+                            this.loopDialogShow = false
+                            this.listLoop()
+                            this.resetLoop()
+                            this.$message.success(result.message)
+                        }else{
+                            this.$message.error(result.message)
+                        }
+                    })
+                }
+
             },
             beforeUpload(){
 
@@ -206,10 +249,22 @@
                 }
             },
             edit(item) {
-                console.log(item)
+                //数据回显
+                this.loopEditorDialogCommitText='修改'
+                this.loopDialogShow = true
+                this.loopEditorTitle='修改轮播图'
+                this.Looper.id = item.id
+                this.Looper.order = item.order
+                this.Looper.state = item.state
+                this.Looper.title = item.title
+                this.Looper.targetUrl = item.targetUrl
+                this.Looper.imageUrl = item.imageUrl
             },
             deleteItem(item) {
-                console.log(item)
+                this.deleteMessage = item.title
+                this.deleteLooperId = item.id
+                //通过id来删除链接
+                this.deleteDialogShow = true
             },
             formatDate(dateStr) {
                 let date = new Date(dateStr)
