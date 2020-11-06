@@ -89,6 +89,16 @@
                 </el-table-column>
             </el-table>
         </div>
+        <div class="page-navigation-box">
+            <el-pagination
+                    background
+                    @current-change = "onPageChange"
+                    :current-page="pageNavigation.currentPage"
+                    :page-size="pageNavigation.pageSize"
+                    layout="prev, pager, next"
+                    :total="pageNavigation.totalCount">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
@@ -105,13 +115,19 @@
                 userList: [],
                 pageNavigation: {
                     currentPage: 1,
-                    totalPage: 1,
-                    totalSize: 0,
-                    pageSize: 5,
+                    totalCount: 0,
+                    pageSize: 1
                 }
             }
         },
         methods: {
+
+            onPageChange(page){
+                this.pageNavigation.currentPage = page
+                this.listUsers()
+            },
+            //这里写dosearch方法时注意  this.handleUserListResult(result) 已经被抽取
+
             deleteItem(){
 
             },
@@ -119,20 +135,28 @@
 
             },
             listUsers() {
-                this.loading = true
                 api.listUsers(this.pageNavigation.currentPage, this.pageNavigation.pageSize).then(result => {
-                    if (result.code === api.success_code) {
-                        this.userList = result.data.content;
-                    } else {
-                        this.$message.error(result.message);
-                    }
-                    this.loading =false
+                    this.handleUserListResult(result)
                 });
+                this.loading = true
             },
             formatDate(dateStr) {
                 let date = new Date(dateStr)
                 return dateUtils.formatDate(date, 'yyyy-MM-dd:hh:mm:ss')
+            },
+            handleUserListResult(result){
+                if (result.code === api.success_code) {
+                    this.userList = result.data.content;
+                    this.pageNavigation.currentPage = result.data.number +1;
+                    this.pageNavigation.totalCount = result.data.totalElements;
+                    this.pageNavigation.pageSize = result.data.size;
+                } else {
+                    this.$message.error(result.message);
+                }
+                console.log(this.pageNavigation)
+                this.loading =false
             }
+
         },
         mounted() {
             this.listUsers()
