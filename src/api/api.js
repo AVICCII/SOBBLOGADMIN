@@ -47,7 +47,6 @@ export const postLoop = (Looper) => {
 export const deleteLoop = (LooperId) => {
     return http.requestDelete('/admin/loop/'+LooperId)
 };
-updateLooper
 
 //更新分类列表
 export const updateLooper = (LooperId,Looper) => {
@@ -57,4 +56,14 @@ export const updateLooper = (LooperId,Looper) => {
 //更新分类列表
 export const listUsers = (page,size) => {
     return http.requestGet('/user/list?page='+page+'&size='+size)
+};
+
+//删除分类列表
+export const deleteUserById = (userId) => {
+    return http.requestDelete('/user/'+userId)
+};
+
+//获取邮箱验证码
+export const getVerifyCode = (emailAddress,type) => {
+    return http.requestGet('/user/verify_code?email='+emailAddress+'&type='+type);
 };

@@ -20,11 +20,10 @@ const loopManage = () => import("@/page/operation/loop")
 /* 设置 */
 const friendLink = () => import("@/page/settings/friend-link")
 const webSizeInfo = () => import("@/page/settings/websize-info")
+const info = () => import("@/page/settings/info")
+const email = () => import("@/page/settings/email")
 /* 用户 */
-const email = () => import("@/page/user/email")
-const info = () => import("@/page/user/info")
 const list = () => import("@/page/user/list")
-const resetPassword = () => import("@/page/user/reset-password")
 /* 布局 */
 const baseView = () => import("@/layout/base-view")
 const rightView = () => import("@/layout/right-content")
@@ -92,27 +91,6 @@ export const routes = [
                         name:'用户列表',
                         hidden:false,
                         component:list
-                    },
-                    {
-                        path:'reset-password',
-                        icon: 'el-icon-lock',
-                        name:'密码重置',
-                        hidden:false,
-                        component:resetPassword
-                    },
-                    {
-                        path:'email',
-                        icon: 'el-icon-message',
-                        name:'邮箱设置',
-                        hidden:false,
-                        component:email
-                    },
-                    {
-                        path:'info',
-                        icon: 'el-icon-user-solid',
-                        name:'用户信息',
-                        hidden:false,
-                        component:info
                     }
                 ]
             },
@@ -159,6 +137,20 @@ export const routes = [
                         name:'网站信息',
                         hidden:false,
                         component:webSizeInfo
+                    },
+                    {
+                        path:'email',
+                        icon: 'el-icon-message',
+                        name:'邮箱设置',
+                        hidden:false,
+                        component:email
+                    },
+                    {
+                        path:'info',
+                        icon: 'el-icon-user-solid',
+                        name:'用户信息',
+                        hidden:false,
+                        component:info
                     }
                 ]
             }

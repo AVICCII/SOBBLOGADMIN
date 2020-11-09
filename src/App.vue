@@ -13,4 +13,12 @@ export default {
 
 <style>
 
+  .margin-bottom{
+    margin-bottom: 20px;
+  }
+
+  .clearfix{
+    overflow: auto;
+    zoom: 1;
+  }
 </style>
